@@ -5,70 +5,70 @@ using UnityEngine;
 
 public class SpriteInfo
 {
-    public float time;              //½ºÇÁ¶óÀÌÆ®°¡ »ç¿ëµÇ´Â ½Ã°£
-    public string spriteName;       //½ºÇÁ¶óÀÌÆ® ÀÌ¸§
+    public float time;              //ìŠ¤í”„ë¼ì´íŠ¸ê°€ ì‚¬ìš©ë˜ëŠ” ì‹œê°„
+    public string spriteName;       //ìŠ¤í”„ë¼ì´íŠ¸ ì´ë¦„
 }
 
 public class AnmationSpriteExtractor : EditorWindow
 {
-    private AnimationClip animationClip;                                //¼±ÅÃµÈ ¾Ö´Ï¸ŞÀÌ¼Ç Å¬¸³
-    private List<SpriteInfo> spriteInfoList = new List<SpriteInfo>();   //½ºÇÁ¶óÀÌÆ® Á¤º¸¸¦ ÀúÀåÇÒ ¸®½ºÆ®
+    private AnimationClip animationClip;                                //ì„ íƒëœ ì• ë‹ˆë©”ì´ì…˜ í´ë¦½
+    private List<SpriteInfo> spriteInfoList = new List<SpriteInfo>();   //ìŠ¤í”„ë¼ì´íŠ¸ ì •ë³´ë¥¼ ì €ì¥í•  ë¦¬ìŠ¤íŠ¸
 
-    [MenuItem("Window/Animation Sprite Extractor")]     //¸Ş´º¿¡ Animation Sprite Extractor Ç×¸ñÀ» Ãß°¡
+    [MenuItem("Window/Animation Sprite Extractor")]     //ë©”ë‰´ì— Animation Sprite Extractor í•­ëª©ì„ ì¶”ê°€
 
     public static void ShowWindow()
     {
-        GetWindow<AnmationSpriteExtractor>("Animation Sprite Extractor");     //¿¡µğÅÍ Ã¢ ¿­±â
+        GetWindow<AnmationSpriteExtractor>("Animation Sprite Extractor");     //ì—ë””í„° ì°½ ì—´ê¸°
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("Extract Sprites Info form Animation Clip", EditorStyles.boldLabel);   //¿¡µğÅÍ Ã¢¿¡ ·¹ÀÌºí°ú ¾Ö´Ï¸ŞÀÌ¼Ç Å¬¸³ ÇÊµå Ç¥½Ã
+        GUILayout.Label("Extract Sprites Info form Animation Clip", EditorStyles.boldLabel);   //ì—ë””í„° ì°½ì— ë ˆì´ë¸”ê³¼ ì• ë‹ˆë©”ì´ì…˜ í´ë¦½ í•„ë“œ í‘œì‹œ
 
-        //»ç¿ëÀÚ°¡ µå·¡±× ¾Ø µå·ÓÀ¸·Î ¾Ö´Ï¸ŞÀÌ¼Ç Å¬¸³À» ¼³Á¤ÇÒ ¼ö ÀÖ°Ô ÇØÁÜ
+        //ì‚¬ìš©ìê°€ ë“œë˜ê·¸ ì•¤ ë“œë¡­ìœ¼ë¡œ ì• ë‹ˆë©”ì´ì…˜ í´ë¦½ì„ ì„¤ì •í•  ìˆ˜ ìˆê²Œ í•´ì¤Œ
         animationClip = EditorGUILayout.ObjectField("Animation Clip", animationClip, typeof(AnimationClip), true) as AnimationClip;
 
-        if (animationClip != null)  //¾Ö´Ï¸ŞÀÌ¼Ç Å¬¸³ÀÌ ¼³Á¤µÈ °æ¿ì
+        if (animationClip != null)  //ì• ë‹ˆë©”ì´ì…˜ í´ë¦½ì´ ì„¤ì •ëœ ê²½ìš°
         {
-            if (GUILayout.Button("Extract Sprites Info"))   //¹öÆ°ÀÌ Å¬¸¯ µÇ¸é ½ºÇÁ¶óÀÌÆ® Á¤º¸¸¦ ÃßÃâ
+            if (GUILayout.Button("Extract Sprites Info"))   //ë²„íŠ¼ì´ í´ë¦­ ë˜ë©´ ìŠ¤í”„ë¼ì´íŠ¸ ì •ë³´ë¥¼ ì¶”ì¶œ
             {
                 ExtractSpriteInfo(animationClip);
             }
 
-            if (spriteInfoList.Count > 0)                   //½ºÇÁ¶óÀÌÆ® Á¤º¸ ¸®½ºÆ®°¡ ºñ¾îÀÖÁö ¾ÊÀº °æ¿ì, ¸®½ºÆ®ÀÇ ³»¿ëÀ» Ç¥½Ã
+            if (spriteInfoList.Count > 0)                   //ìŠ¤í”„ë¼ì´íŠ¸ ì •ë³´ ë¦¬ìŠ¤íŠ¸ê°€ ë¹„ì–´ìˆì§€ ì•Šì€ ê²½ìš°, ë¦¬ìŠ¤íŠ¸ì˜ ë‚´ìš©ì„ í‘œì‹œ
             {
-                GUILayout.Label("Sprite Info : " , EditorStyles.boldLabel);
+                GUILayout.Label("Sprite Info : ", EditorStyles.boldLabel);
                 foreach (var spriteInfo in spriteInfoList)
                 {
-                    GUILayout.BeginHorizontal();            //¼öÆò ·¹ÀÌ¾Æ¿ô ½ÃÀÛ
-                    GUILayout.Label("Time:" , GUILayout.Width(50));    //Time ·¹ÀÌºí
-                    GUILayout.Label(spriteInfo.time.ToString(), GUILayout.Width(100));  //½Ã°£ °ª
-                    GUILayout.Label("sprite : ", GUILayout.Width(50));     //Sprite ·¹ÀÌºí
-                    GUILayout.Label(spriteInfo.spriteName, GUILayout.Width(200));       //½ºÇÁ¶óÀÌÆ® ÀÌ¸§
-                    GUILayout.EndHorizontal();               //¼öÆò ·¹ÀÌ¾Æ¿ô Á¾·á
+                    GUILayout.BeginHorizontal();            //ìˆ˜í‰ ë ˆì´ì•„ì›ƒ ì‹œì‘
+                    GUILayout.Label("Time:", GUILayout.Width(50));    //Time ë ˆì´ë¸”
+                    GUILayout.Label(spriteInfo.time.ToString(), GUILayout.Width(100));  //ì‹œê°„ ê°’
+                    GUILayout.Label("sprite : ", GUILayout.Width(50));     //Sprite ë ˆì´ë¸”
+                    GUILayout.Label(spriteInfo.spriteName, GUILayout.Width(200));       //ìŠ¤í”„ë¼ì´íŠ¸ ì´ë¦„
+                    GUILayout.EndHorizontal();               //ìˆ˜í‰ ë ˆì´ì•„ì›ƒ ì¢…ë£Œ
 
                 }
             }
         }
     }
 
-    private void ExtractSpriteInfo(AnimationClip Clip)  //½ºÇÁ¶óÀÌÆ® Á¤º¸¸¦ ÃßÃâ ÇÏ´Â ÇÔ¼ö
+    private void ExtractSpriteInfo(AnimationClip Clip)  //ìŠ¤í”„ë¼ì´íŠ¸ ì •ë³´ë¥¼ ì¶”ì¶œ í•˜ëŠ” í•¨ìˆ˜
     {
-        spriteInfoList.Clear();         //±âÁ¸ ½ºÇÁ¶óÀÌÆ® Á¤º¸ ÃÊ±âÈ­
-        var bindings = AnimationUtility.GetObjectReferenceCurveBindings(Clip);  //¾Ö´Ï¸ŞÀÌ¼Ç Å¬¸³¿¡¼­ Object Reference Curve ¹ÙÀÎµùÀ» °¡Á®¿È
+        spriteInfoList.Clear();         //ê¸°ì¡´ ìŠ¤í”„ë¼ì´íŠ¸ ì •ë³´ ì´ˆê¸°í™”
+        var bindings = AnimationUtility.GetObjectReferenceCurveBindings(Clip);  //ì• ë‹ˆë©”ì´ì…˜ í´ë¦½ì—ì„œ Object Reference Curve ë°”ì¸ë”©ì„ ê°€ì ¸ì˜´
 
-        foreach (var binding in bindings)  //°¢ ¹ÙÀÎµùÀ» ¼øÈ¸
+        foreach (var binding in bindings)  //ê° ë°”ì¸ë”©ì„ ìˆœíšŒ
         {
-            if (binding.propertyName.Contains("Sprite"))  //¹ÙÀÎµùµÈ ÇÁ·ÎÆÛÆ¼°¡ ½ºÇÁ¶óÀÌÆ®ÀÏ °æ¿ì
+            if (binding.propertyName.Contains("Sprite"))  //ë°”ì¸ë”©ëœ í”„ë¡œí¼í‹°ê°€ ìŠ¤í”„ë¼ì´íŠ¸ì¼ ê²½ìš°
             {
-                var keyframes = AnimationUtility.GetObjectReferenceCurve(Clip, binding);  //ÇØ´ç ¹ÙÀÎµùÀÇ Å°ÇÁ·¹ÀÓµéÀ» °¡Á®¿È
+                var keyframes = AnimationUtility.GetObjectReferenceCurve(Clip, binding);  //í•´ë‹¹ ë°”ì¸ë”©ì˜ í‚¤í”„ë ˆì„ë“¤ì„ ê°€ì ¸ì˜´
 
-                foreach (var keyframe in keyframes)  //°¢ Å°ÇÁ·¹ÀÓÀ» ¼øÈ¸
+                foreach (var keyframe in keyframes)  //ê° í‚¤í”„ë ˆì„ì„ ìˆœíšŒ
                 {
-                    Sprite sprite = keyframe.value as Sprite;  //Å°ÇÁ·¹ÀÓ °ªÀ» ½ºÇÁ¶óÀÌÆ® Ä³½ºÆÃ
+                    Sprite sprite = keyframe.value as Sprite;  //í‚¤í”„ë ˆì„ ê°’ì„ ìŠ¤í”„ë¼ì´íŠ¸ ìºìŠ¤íŒ…
                     if (sprite != null)
                     {
-                        spriteInfoList.Add(new SpriteInfo { time = keyframe.time, spriteName = sprite.name }); //1½ºÇÁ¶óÀÌµå Á¤º¸¸¦ ¸®½ºÆ®¿¡ Ãß°¡
+                        spriteInfoList.Add(new SpriteInfo { time = keyframe.time, spriteName = sprite.name }); //1ìŠ¤í”„ë¼ì´ë“œ ì •ë³´ë¥¼ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
                     }
                 }
             }

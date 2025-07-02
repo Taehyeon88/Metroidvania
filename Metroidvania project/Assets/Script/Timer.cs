@@ -2,46 +2,46 @@ using UnityEngine;
 
 public class Timer
 {
-    private float duration;              //µ¿ÀÛ½Ã°£
-    private float remainingTimer;        //³²Àº½Ã°£
-    private bool isRunning;              //µ¿ÀÛÁßÀÎÁö ÆÇ´Ü
+    private float duration;              //ë™ì‘ì‹œê°„
+    private float remainingTimer;        //ë‚¨ì€ì‹œê°„
+    private bool isRunning;              //ë™ì‘ì¤‘ì¸ì§€ íŒë‹¨
 
-    public Timer(float duration)         //Å¬·¡½º »ı¼ºÀÚ [Å¬·¡½º°¡ ¸¸µé¾îÁú ¶§ ÃÊ±âÈ­]
+    public Timer(float duration)         //í´ë˜ìŠ¤ ìƒì„±ì [í´ë˜ìŠ¤ê°€ ë§Œë“¤ì–´ì§ˆ ë•Œ ì´ˆê¸°í™”]
     {
         this.duration = duration;
         this.remainingTimer = duration;
         this.isRunning = false;
     }
 
-    public void Start()                     //½ºÅ¸Æ® »ı¸íÁÖ±â¿¡¼­ »ç¿ëÇÒ¶§ µ¿ÀÛ ½ÃÀÛ ÇØÁÖ´Â ÇÔ¼ö
+    public void Start()                     //ìŠ¤íƒ€íŠ¸ ìƒëª…ì£¼ê¸°ì—ì„œ ì‚¬ìš©í• ë•Œ ë™ì‘ ì‹œì‘ í•´ì£¼ëŠ” í•¨ìˆ˜
     {
         this.remainingTimer = duration;
         this.isRunning = true;
     }
 
-    public void Update(float deltaTime)      //Uptate ÇÔ¼ö¿¡¼­ DeltaTimeÀ» ¹Ş¾Æ¿Â´Ù
+    public void Update(float deltaTime)      //Uptate í•¨ìˆ˜ì—ì„œ DeltaTimeì„ ë°›ì•„ì˜¨ë‹¤
     {
-        if (isRunning)                       //µ¿ÀÛÁßÀÌ¸é
+        if (isRunning)                       //ë™ì‘ì¤‘ì´ë©´
         {
-            remainingTimer -= deltaTime;     //¹Ş¾Æ¿Â DeltaTimeÀ» °¨¼Ò½ÃÅ²´Ù
-            if (remainingTimer <= 0)         //½Ã°£ÀÌ 
+            remainingTimer -= deltaTime;     //ë°›ì•„ì˜¨ DeltaTimeì„ ê°ì†Œì‹œí‚¨ë‹¤
+            if (remainingTimer <= 0)         //ì‹œê°„ì´ 
             {
-                isRunning = false;            //µ¿ÀÛ ÁßÁö
-                remainingTimer = 0;           //³²Àº ½Ã°£ 0
+                isRunning = false;            //ë™ì‘ ì¤‘ì§€
+                remainingTimer = 0;           //ë‚¨ì€ ì‹œê°„ 0
             }
         }
     }
 
-    public bool IsRunning()                 //µ¿ÀÛÁß È®ÀÎ ÇÔ¼ö
+    public bool IsRunning()                 //ë™ì‘ì¤‘ í™•ì¸ í•¨ìˆ˜
     {
-        return isRunning;                   //µ¿ÀÛ »óÅÂ ¸®ÅÏ
+        return isRunning;                   //ë™ì‘ ìƒíƒœ ë¦¬í„´
     }
 
-    public float GetRemainingTime()         //³²¾ÆÀÖ´Â ½Ã°£ ÇÔ¼öÈ®ÀÎ
+    public float GetRemainingTime()         //ë‚¨ì•„ìˆëŠ” ì‹œê°„ í•¨ìˆ˜í™•ì¸
     {
-        return remainingTimer;              //½Ã°£ »óÅÂ ¸®ÅÏ
+        return remainingTimer;              //ì‹œê°„ ìƒíƒœ ë¦¬í„´
     }
-    public void Reset()                     //ÃÊ±âÈ­ ½ÃÄÑÁÖ´Â ÇÔ¼ö
+    public void Reset()                     //ì´ˆê¸°í™” ì‹œì¼œì£¼ëŠ” í•¨ìˆ˜
     {
         this.remainingTimer = duration;
         this.isRunning = false;

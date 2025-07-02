@@ -5,22 +5,22 @@ using UnityEngine;
 public class CharacterStatus : MonoBehaviour
 {
     //====================================================================================================
-    //»ı¼º°ª ¼³Á¤
+    //ìƒì„±ê°’ ì„¤ì •
     //====================================================================================================
 
-    public int hp = 10;                        //ÇÃ·¹ÀÌ¾î »ı¸í
-    public bool invincible = false;            //¹«Àû »óÅÂ
-    public bool canMove = true;                //ÀÌµ¿°¡´É »óÅÂ
-    public bool isDashing = false;             //´ë½Ã »óÅÂ
-    public bool canDash = true;                //´ë½Ã °¡´É »óÅÂ ¿©ºÎ
-    public float mDashForce = 25f;             //´ë½Ã ÈûÀÇ ·®, º¯¼ö¾ÕÀÇ MÀº ³»ºÎ¿¡¼­ ¾²±â À§ÇØ¼­
+    public int hp = 10;                        //í”Œë ˆì´ì–´ ìƒëª…
+    public bool invincible = false;            //ë¬´ì  ìƒíƒœ
+    public bool canMove = true;                //ì´ë™ê°€ëŠ¥ ìƒíƒœ
+    public bool isDashing = false;             //ëŒ€ì‹œ ìƒíƒœ
+    public bool canDash = true;                //ëŒ€ì‹œ ê°€ëŠ¥ ìƒíƒœ ì—¬ë¶€
+    public float mDashForce = 25f;             //ëŒ€ì‹œ í˜ì˜ ëŸ‰, ë³€ìˆ˜ì•ì˜ Mì€ ë‚´ë¶€ì—ì„œ ì“°ê¸° ìœ„í•´ì„œ
 
     //====================================================================================================
-    //Å¸ÀÌ¸Ó »ı¼º°ª
+    //íƒ€ì´ë¨¸ ìƒì„±ê°’
     //====================================================================================================
 
-    public Timer stunTimer = new Timer(0.25f);             //½ºÅÏÅ¸ÀÌ¸Ó 0.25ÃÊ /  »ı¼ºÀÚ¸¦ ºÒ·¯¿Ã ¶§´Â new¸¦ ºÙ¿©ÁØ´Ù.
-    public Timer invincibilityTimer = new Timer(1f);       //¹«ÀûÅ¸ÀÌ¸Ó 1ÃÊ
+    public Timer stunTimer = new Timer(0.25f);             //ìŠ¤í„´íƒ€ì´ë¨¸ 0.25ì´ˆ /  ìƒì„±ìë¥¼ ë¶ˆëŸ¬ì˜¬ ë•ŒëŠ” newë¥¼ ë¶™ì—¬ì¤€ë‹¤.
+    public Timer invincibilityTimer = new Timer(1f);       //ë¬´ì íƒ€ì´ë¨¸ 1ì´ˆ
     public Timer moveTimer = new Timer(0f);
     public Timer checkTimer = new Timer(0f);
     public Timer endSlidingTimer = new Timer(0f);
@@ -28,13 +28,13 @@ public class CharacterStatus : MonoBehaviour
     public Timer dashCooldownTimer = new Timer(0.6f);
     void Start()
     {
-        
+
     }
 
     void Update()
     {
         //====================================================================================================
-        //Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
+        //íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
         //====================================================================================================
 
         float deltaTime = Time.deltaTime;
@@ -47,33 +47,33 @@ public class CharacterStatus : MonoBehaviour
         dashCooldownTimer.Update(deltaTime);
 
         //====================================================================================================
-        //Å¸ÀÌ¸Ó »óÅÂÃ¼Å©
+        //íƒ€ì´ë¨¸ ìƒíƒœì²´í¬
         //====================================================================================================
 
-        if (!stunTimer.IsRunning())                           //½ºÅÏ Å¸ÀÌ¸Ó µ¿ÀÛ Ã¼Å©
+        if (!stunTimer.IsRunning())                           //ìŠ¤í„´ íƒ€ì´ë¨¸ ë™ì‘ ì²´í¬
         {
             canMove = true;
         }
 
-        if(!invincibilityTimer.IsRunning())                   //¹«Àû Å¸ÀÌ¸Ó µ¿ÀÛ Ã¼Å©
+        if (!invincibilityTimer.IsRunning())                   //ë¬´ì  íƒ€ì´ë¨¸ ë™ì‘ ì²´í¬
         {
             invincible = false;
         }
 
-        if (!moveTimer.IsRunning())                            //ÀÌµ¿ Å¸ÀÌ¸Ó µ¿ÀÛ Ã¼Å©
+        if (!moveTimer.IsRunning())                            //ì´ë™ íƒ€ì´ë¨¸ ë™ì‘ ì²´í¬
         {
             canMove = true;
         }
-         
-        if (isDashing && !dashCooldownTimer.IsRunning())        //´ë»ç Å¸ÀÌ¸Ó µ¿ÀÛ Ã¼Å©
+
+        if (isDashing && !dashCooldownTimer.IsRunning())        //ëŒ€ì‚¬ íƒ€ì´ë¨¸ ë™ì‘ ì²´í¬
         {
             isDashing = false;
             canMove = true;
             canDash = true;
         }
-        if (deadTimer.GetRemainingTime() <= 0)                  //Á×À½ ÀÌÈÄ Ã³¸®
+        if (deadTimer.GetRemainingTime() <= 0)                  //ì£½ìŒ ì´í›„ ì²˜ë¦¬
         {
-            //¾À Ã³¸® µîµî ÇØÁØ´Ù.
+            //ì”¬ ì²˜ë¦¬ ë“±ë“± í•´ì¤€ë‹¤.
         }
     }
 
@@ -83,11 +83,11 @@ public class CharacterStatus : MonoBehaviour
         isDashing = true;
         canMove = false;
         canDash = false;
-        dashCooldownTimer = new Timer(dashDuration);              //»õ·Î¿î Å¸ÀÌ¸Ó¼³Á¤
+        dashCooldownTimer = new Timer(dashDuration);              //ìƒˆë¡œìš´ íƒ€ì´ë¨¸ì„¤ì •
         dashCooldownTimer.Start();
     }
 
-    public void ApplyDamage(int damage, Vector3 position)         //µ¥¹ÌÁö¸¦ ¹ŞÀ» ¶§ Àá½Ã ¹«Àû½Ã°£À» ÁÖ°í ½ºÅÏÃ³¸®
+    public void ApplyDamage(int damage, Vector3 position)         //ë°ë¯¸ì§€ë¥¼ ë°›ì„ ë•Œ ì ì‹œ ë¬´ì ì‹œê°„ì„ ì£¼ê³  ìŠ¤í„´ì²˜ë¦¬
     {
         if (!invincible)
         {

@@ -5,33 +5,33 @@ using UnityEngine.Events;
 
 public class CharacterMovement : MonoBehaviour
 {
-    [SerializeField] private float m_JumpForce = 400.0f;        //Á¡ÇÁ ½Ã Ãß°¡µÇ´Â ÈûÀÇ ¾ç
+    [SerializeField] private float m_JumpForce = 400.0f;        //ì í”„ ì‹œ ì¶”ê°€ë˜ëŠ” í˜ì˜ ì–‘
     [Range(0, 0.3f)]
-    [SerializeField] private float m_MovementSmoothing = 0.05f; //ÀÌµ¿À» ºÎµå·´°Ô ÇÏ±â À§ÇÑ ÆòÅºÈ­
-    [SerializeField] private bool m_AirControl = false;         //Á¡ÇÁ Áß¿¡µµ Á¶ÀÛ ÇÒ ¼ö ÀÖ´ÂÁö ¿©ºÎ
-    [SerializeField] private LayerMask m_WhatIsGround;          //Ä³¸¯ÅÍ¿¡°Ô ¶¥ÀÌ ¹«¾ùÀÎÁö °áÁ¤ÇÏ´Â ¸¶½ºÅ©
-    [SerializeField] private Transform m_GroundCheck;           //ÇÃ·¹ÀÌ¾î°¡ ¶¥¿¡ ´ê¾Ò´ÂÁö È®ÀÎÇÏ´Â À§Ä¡
-    [SerializeField] private Transform m_WallCheck;             //ÇÃ·¹ÀÌ¾î°¡ º®¿¡ ´ê¾Ò´ÂÁö È®ÀÎÇÏ´Â À§Ä¡
+    [SerializeField] private float m_MovementSmoothing = 0.05f; //ì´ë™ì„ ë¶€ë“œëŸ½ê²Œ í•˜ê¸° ìœ„í•œ í‰íƒ„í™”
+    [SerializeField] private bool m_AirControl = false;         //ì í”„ ì¤‘ì—ë„ ì¡°ì‘ í•  ìˆ˜ ìˆëŠ”ì§€ ì—¬ë¶€
+    [SerializeField] private LayerMask m_WhatIsGround;          //ìºë¦­í„°ì—ê²Œ ë•…ì´ ë¬´ì—‡ì¸ì§€ ê²°ì •í•˜ëŠ” ë§ˆìŠ¤í¬
+    [SerializeField] private Transform m_GroundCheck;           //í”Œë ˆì´ì–´ê°€ ë•…ì— ë‹¿ì•˜ëŠ”ì§€ í™•ì¸í•˜ëŠ” ìœ„ì¹˜
+    [SerializeField] private Transform m_WallCheck;             //í”Œë ˆì´ì–´ê°€ ë²½ì— ë‹¿ì•˜ëŠ”ì§€ í™•ì¸í•˜ëŠ” ìœ„ì¹˜
 
-    const float k_GroundedRadius = 0.2f;          //¶¥¿¡ ´ê¾Ò´ÂÁö È®ÀÎÇÏ´Â °ãÄ§ ¿øÀÇ ¹İ°æ
-    private bool m_IsGrounded;                    //ÇÃ·¹ÀÌ¾î°¡ ¶¥¿¡ ´ê¾Ò´ÂÁö ¿©ºÎ
-    private Rigidbody2D m_Rigidbody2D;            
-    private bool m_FacingRight = true;            //ÇÃ·¹ÀÌ¾î°¡ ÇöÀç ¾î´À ¹æÇâÀ» ¹Ù¶óº¸°í ÀÖ´Â Áö °áÁ¤
-    private Vector3 velocity = Vector3.zero;      //¼Óµµ
-    private float limitFallSpeed = 25f;           //³«ÇÏ ¼Óµµ Á¦ÇÑ
+    const float k_GroundedRadius = 0.2f;          //ë•…ì— ë‹¿ì•˜ëŠ”ì§€ í™•ì¸í•˜ëŠ” ê²¹ì¹¨ ì›ì˜ ë°˜ê²½
+    private bool m_IsGrounded;                    //í”Œë ˆì´ì–´ê°€ ë•…ì— ë‹¿ì•˜ëŠ”ì§€ ì—¬ë¶€
+    private Rigidbody2D m_Rigidbody2D;
+    private bool m_FacingRight = true;            //í”Œë ˆì´ì–´ê°€ í˜„ì¬ ì–´ëŠ ë°©í–¥ì„ ë°”ë¼ë³´ê³  ìˆëŠ” ì§€ ê²°ì •
+    private Vector3 velocity = Vector3.zero;      //ì†ë„
+    private float limitFallSpeed = 25f;           //ë‚™í•˜ ì†ë„ ì œí•œ
 
-    public bool canDoubleJump = true;             //ÇÃ·¹ÀÌ¾î°¡ ´õºí Á¡ÇÁ¸¦ ÇÒ ¼ö ÀÖ´ÂÁö ¿©ºÎ
-    private bool m_IsWall = false;                //ÇÃ·¹ÀÌ¾î ¾Õ¿¡ º®ÀÌ ÀÖ´ÂÁö ¿©ºÎ
-    private bool m_IsWallSlidding = false;        //ÇÃ·¹ÀÌ¾î°¡ º®À» Å¸°í ÀÖ´ÂÁö ¿©ºÎ
-    private bool oldWallSlidding = false;         //ÀÌÀü ÇÁ·¹ÀÓ¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ º®À» Å¸°í ÀÖ¾ú´ÂÁö ¿©ºÎ
+    public bool canDoubleJump = true;             //í”Œë ˆì´ì–´ê°€ ë”ë¸” ì í”„ë¥¼ í•  ìˆ˜ ìˆëŠ”ì§€ ì—¬ë¶€
+    private bool m_IsWall = false;                //í”Œë ˆì´ì–´ ì•ì— ë²½ì´ ìˆëŠ”ì§€ ì—¬ë¶€
+    private bool m_IsWallSlidding = false;        //í”Œë ˆì´ì–´ê°€ ë²½ì„ íƒ€ê³  ìˆëŠ”ì§€ ì—¬ë¶€
+    private bool oldWallSlidding = false;         //ì´ì „ í”„ë ˆì„ì—ì„œ í”Œë ˆì´ì–´ê°€ ë²½ì„ íƒ€ê³  ìˆì—ˆëŠ”ì§€ ì—¬ë¶€
     private float preVelocityX = 0f;
-    private bool canCheck = false;                //ÇÃ·¹ÀÌ¾î°¡ º®À» Å¸°í ÀÖ´ÂÁö È®ÀÎÇÏ±â À§ÇÑ ¿©ºÎ
+    private bool canCheck = false;                //í”Œë ˆì´ì–´ê°€ ë²½ì„ íƒ€ê³  ìˆëŠ”ì§€ í™•ì¸í•˜ê¸° ìœ„í•œ ì—¬ë¶€
 
     private Animator animator;
 
     private float jumpWallStartX = 0;
-    private float jumpWallDistX = 0;            //ÇÃ·¹ÀÌ¾î¿Í º® »çÀÌÀÇ °Å¸®
-    private bool limitVelOnWallJump = false;    //³·Àº FPS¿¡¼­ º® Á¡ÇÁ °Å¸®¸¦ Á¦ÇÑÇÏ±â À§ÇÑ º¯¼ö
+    private float jumpWallDistX = 0;            //í”Œë ˆì´ì–´ì™€ ë²½ ì‚¬ì´ì˜ ê±°ë¦¬
+    private bool limitVelOnWallJump = false;    //ë‚®ì€ FPSì—ì„œ ë²½ ì í”„ ê±°ë¦¬ë¥¼ ì œí•œí•˜ê¸° ìœ„í•œ ë³€ìˆ˜
 
 
     [Header("Events")]
@@ -40,32 +40,32 @@ public class CharacterMovement : MonoBehaviour
     public UnityEvent OnLandEvent;
     private CharacterStatus status;
 
-    private void Awake()              //ÀÌº¥Æ®°¡ Ãß°¡ ¾ÈµÇ¾î ÀÖÀ» ¶§ ÀÌº¥Æ®¸¦ ÇÒ´çÇÑ´Ù.
+    private void Awake()              //ì´ë²¤íŠ¸ê°€ ì¶”ê°€ ì•ˆë˜ì–´ ìˆì„ ë•Œ ì´ë²¤íŠ¸ë¥¼ í• ë‹¹í•œë‹¤.
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         status = GetComponent<CharacterStatus>();
 
-        if (OnFallEvent == null)      //ÀÌº¥Æ®°¡ Ãß°¡ ¾ÈµÇ¾î ÀÖÀ» ¶§ ÀÌº¥Æ®¸¦ ÇÒ´çÇÑ´Ù.
+        if (OnFallEvent == null)      //ì´ë²¤íŠ¸ê°€ ì¶”ê°€ ì•ˆë˜ì–´ ìˆì„ ë•Œ ì´ë²¤íŠ¸ë¥¼ í• ë‹¹í•œë‹¤.
             OnFallEvent = new UnityEvent();
 
-        if(OnLandEvent == null)
+        if (OnLandEvent == null)
             OnLandEvent = new UnityEvent();
     }
 
-    private void Flip()                  //ÇÃ¸³ ÇÔ¼ö¸£ È£Ãâ ÇÏ¿© ¹æÇâ ÀüÈ¯
+    private void Flip()                  //í”Œë¦½ í•¨ìˆ˜ë¥´ í˜¸ì¶œ í•˜ì—¬ ë°©í–¥ ì „í™˜
     {
-        m_FacingRight = !m_FacingRight;  //ÇÃ·¹ÀÌ¾î°¡ ¹Ù¶óº¸´Â ¹æÇâÀ» ÀüÈ¯
-        Vector3 theScale = transform.localScale; //ÇÃ·¹ÀÌ¾îÀÇ X ·ÎÄÃ ½ºÄÉÀÏÀ» -1·Î °öÇØ¼­ µÚÁı¾î ÁØ´Ù.
+        m_FacingRight = !m_FacingRight;  //í”Œë ˆì´ì–´ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ì„ ì „í™˜
+        Vector3 theScale = transform.localScale; //í”Œë ˆì´ì–´ì˜ X ë¡œì»¬ ìŠ¤ì¼€ì¼ì„ -1ë¡œ ê³±í•´ì„œ ë’¤ì§‘ì–´ ì¤€ë‹¤.
         theScale.x *= -1;
         transform.localScale = theScale;
     }
 
-    private void FixedUpdate()               //FixedUpdate¿¡¼­ ÀÌµ¿ ±¸ÇöÀ» ÇÑ´Ù.
+    private void FixedUpdate()               //FixedUpdateì—ì„œ ì´ë™ êµ¬í˜„ì„ í•œë‹¤.
     {
-        bool wasGround = m_IsGrounded;       //¶¥ Ã¼Å© °ªÀ» ÀÌÀü º¯¼ö¿¡ ³Ö¾î¼­ ¸Å ÇÁ·¹ÀÓ¸¶´Ù °»½Å
+        bool wasGround = m_IsGrounded;       //ë•… ì²´í¬ ê°’ì„ ì´ì „ ë³€ìˆ˜ì— ë„£ì–´ì„œ ë§¤ í”„ë ˆì„ë§ˆë‹¤ ê°±ì‹ 
         m_IsGrounded = false;
-        //GroundCheck À§Ä¡¿¡¼­ ¶¥À¸·Î ÁöÁ¤µÈ °Í°ú °ãÄ¡´ÂÁö È®ÀÎ
+        //GroundCheck ìœ„ì¹˜ì—ì„œ ë•…ìœ¼ë¡œ ì§€ì •ëœ ê²ƒê³¼ ê²¹ì¹˜ëŠ”ì§€ í™•ì¸
         Collider2D[] groundColliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
         for (int i = 0; i < groundColliders.Length; i++)
         {
@@ -83,13 +83,13 @@ public class CharacterMovement : MonoBehaviour
                 }
             }
         }
-        if (!m_IsGrounded) OnFallEvent.Invoke();   //¶¥ÀÌ ¾Æ´Ò¶§ ¶³¾îÁö°í ÀÖ´Ù´Â ÀÌº¥Æ®¸¦ È£Ãâ
+        if (!m_IsGrounded) OnFallEvent.Invoke();   //ë•…ì´ ì•„ë‹ë•Œ ë–¨ì–´ì§€ê³  ìˆë‹¤ëŠ” ì´ë²¤íŠ¸ë¥¼ í˜¸ì¶œ
 
         bool wasWallSlidding = m_IsWallSlidding;
         m_IsWallSlidding = false;
         m_IsWall = false;
 
-        //WallCheck À§Ä¡¿¡¼­ º®À¸·Î ÁöÁ¤µÈ °Í°ú °ãÄ¡´ÂÁö È®ÀÎ
+        //WallCheck ìœ„ì¹˜ì—ì„œ ë²½ìœ¼ë¡œ ì§€ì •ëœ ê²ƒê³¼ ê²¹ì¹˜ëŠ”ì§€ í™•ì¸
         Collider2D[] WallColiders = Physics2D.OverlapCircleAll(m_WallCheck.position, k_GroundedRadius, m_WhatIsGround);
         for (int i = 0; i < WallColiders.Length; i++)
         {
@@ -99,7 +99,7 @@ public class CharacterMovement : MonoBehaviour
                 if (!m_IsGrounded && !status.isDashing && m_Rigidbody2D.velocity.y < 0)
                 {
                     m_IsWallSlidding = true;
-                    if (!wasWallSlidding)            //ÀÌÀü ÇÁ·¹ÀÓÀÌ º®ÀÌ ¾Æ´Ï¿´´Ù¸é Ã¼Å©ÇÏ¿© µé·Á¼­ º®À» ½½¶óÀÌµù ÇÏ°í °ËÃâÇÏ°Ô ÇÑ´Ù
+                    if (!wasWallSlidding)            //ì´ì „ í”„ë ˆì„ì´ ë²½ì´ ì•„ë‹ˆì˜€ë‹¤ë©´ ì²´í¬í•˜ì—¬ ë“¤ë ¤ì„œ ë²½ì„ ìŠ¬ë¼ì´ë”© í•˜ê³  ê²€ì¶œí•˜ê²Œ í•œë‹¤
                     {
                         m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
                         Flip();
@@ -108,9 +108,9 @@ public class CharacterMovement : MonoBehaviour
             }
         }
 
-        preVelocityX = m_Rigidbody2D.velocity.x;     //ÀÌÀü ¼Óµµ¸¦ ÇÒ´çÇÑ´Ù.
+        preVelocityX = m_Rigidbody2D.velocity.x;     //ì´ì „ ì†ë„ë¥¼ í• ë‹¹í•œë‹¤.
 
-        //º® Á¡ÇÁ ºÎºĞ º¸Á¤°ª ±¸
+        //ë²½ ì í”„ ë¶€ë¶„ ë³´ì •ê°’ êµ¬
         if (limitVelOnWallJump)
         {
             if (m_Rigidbody2D.velocity.y < -0.5f) limitVelOnWallJump = false;
@@ -142,31 +142,31 @@ public class CharacterMovement : MonoBehaviour
             animator.SetBool("IsWallSliding", false);
         }
 
-        animator.SetFloat("Speed", Mathf.Abs(m_Rigidbody2D.velocity.x));  //¾Ö´Ï¸ŞÀÌ¼Ç ¼Óµµ Àü´Ş
+        animator.SetFloat("Speed", Mathf.Abs(m_Rigidbody2D.velocity.x));  //ì• ë‹ˆë©”ì´ì…˜ ì†ë„ ì „ë‹¬
     }
 
     public void Move(float move, bool jump, bool dash)
     {
-        if (status.canMove)      //Å¬·¡½º¿¡¼­ ÀÌµ¿ÀÌ °¡´ÉÇÏ´Ù°í ÇÏ¸é
+        if (status.canMove)      //í´ë˜ìŠ¤ì—ì„œ ì´ë™ì´ ê°€ëŠ¥í•˜ë‹¤ê³  í•˜ë©´
         {
-            if (dash && status.canMove && !m_IsWallSlidding) //´ë½Ã°¡ °¡´ÉÇÑ Á¶°ÇÀ» °Ë»çÇÏ¿© ´ë½Ã ½ÇÇà
+            if (dash && status.canMove && !m_IsWallSlidding) //ëŒ€ì‹œê°€ ê°€ëŠ¥í•œ ì¡°ê±´ì„ ê²€ì‚¬í•˜ì—¬ ëŒ€ì‹œ ì‹¤í–‰
             {
                 status.StartDash(0.1f);
             }
-            if (status.isDashing)  //´ë½Ã ÁßÀÏ Ã³¸®
+            if (status.isDashing)  //ëŒ€ì‹œ ì¤‘ì¼ ì²˜ë¦¬
             {
                 m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * status.mDashForce, 0);
             }
-            else if (m_IsGrounded || m_AirControl)   //ÇÃ·¹ÀÌ¾î°¡ ¶¥¿¡ ´ê¾Ò°Å³ª °íÁß Á¦¾î°¡ ÄÑÁ® ÀÖÀ»¶§
+            else if (m_IsGrounded || m_AirControl)   //í”Œë ˆì´ì–´ê°€ ë•…ì— ë‹¿ì•˜ê±°ë‚˜ ê³ ì¤‘ ì œì–´ê°€ ì¼œì ¸ ìˆì„ë•Œ
             {
-                if (m_Rigidbody2D.velocity.y < -limitFallSpeed) m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, -limitFallSpeed); //¼Óµµ Á¦ÇÑ
+                if (m_Rigidbody2D.velocity.y < -limitFallSpeed) m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, -limitFallSpeed); //ì†ë„ ì œí•œ
 
-                Vector3 targetVelocity = new Vector2(move * 10.0f, m_Rigidbody2D.velocity.y);  //¸ñÇ¥ ¼Óµµ¸¦ °è»ê
-                m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref velocity, m_MovementSmoothing); //¼Óµµ¸¦ ºÎµå·´°Ô º¯°æ
-                
-                if (move > 0 && !m_FacingRight && !m_IsWallSlidding)  //ÀÔ·ÂÀÌ ¿À¸¥ÂÊ, ÇÃ·¹ÀÌ¾î°¡ ¿ŞÂÊ º¸°í ÀÖ´Ù¸é
+                Vector3 targetVelocity = new Vector2(move * 10.0f, m_Rigidbody2D.velocity.y);  //ëª©í‘œ ì†ë„ë¥¼ ê³„ì‚°
+                m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref velocity, m_MovementSmoothing); //ì†ë„ë¥¼ ë¶€ë“œëŸ½ê²Œ ë³€ê²½
+
+                if (move > 0 && !m_FacingRight && !m_IsWallSlidding)  //ì…ë ¥ì´ ì˜¤ë¥¸ìª½, í”Œë ˆì´ì–´ê°€ ì™¼ìª½ ë³´ê³  ìˆë‹¤ë©´
                 {
-                    Flip();   //ÇÃ·¹ÀÌ¾î¸¦ µÚÁı´Â´Ù
+                    Flip();   //í”Œë ˆì´ì–´ë¥¼ ë’¤ì§‘ëŠ”ë‹¤
                 }
                 else if (move < 0 && m_FacingRight && !m_IsWallSlidding)
                 {
@@ -175,24 +175,24 @@ public class CharacterMovement : MonoBehaviour
 
             }
 
-            if (m_IsGrounded && jump)  //ÇÃ·¹ÀÌ¾î Á¡ÇÁ
+            if (m_IsGrounded && jump)  //í”Œë ˆì´ì–´ ì í”„
             {
-                animator.SetBool("IsJumping", true);                  //¾Ö´Ï¸ŞÀÌ¼Ç Á¡ÇÁ »óÅÂ Àü´Ş
-                animator.SetBool("JumpUp", true);                   
-                m_IsGrounded = false;                                 //Á¡ÇÁÇÏ¸é¼­ ¶¥¿¡ ÀÖÁö ¾ÊÀ¸¹Ç·Î Bool °ª º¯°æ
-                m_Rigidbody2D.AddForce(new Vector3(0f, m_JumpForce)); //ÇÃ·¹ÀÌ¾î¿¡°Ô ¼öÁ÷ ÈûÀ» Ãß°¡
+                animator.SetBool("IsJumping", true);                  //ì• ë‹ˆë©”ì´ì…˜ ì í”„ ìƒíƒœ ì „ë‹¬
+                animator.SetBool("JumpUp", true);
+                m_IsGrounded = false;                                 //ì í”„í•˜ë©´ì„œ ë•…ì— ìˆì§€ ì•Šìœ¼ë¯€ë¡œ Bool ê°’ ë³€ê²½
+                m_Rigidbody2D.AddForce(new Vector3(0f, m_JumpForce)); //í”Œë ˆì´ì–´ì—ê²Œ ìˆ˜ì§ í˜ì„ ì¶”ê°€
                 canDoubleJump = true;
             }
             else if (!m_IsGrounded && jump && canDoubleJump && !m_IsWallSlidding)
             {
                 canDoubleJump = false;
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0);
-                m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));  //ÇÃ·¹ÀÌ¾î¿¡°Ô ¼öÁ÷ ÈûÀ» Ãß°¡
-                animator.SetBool("IsDoubleJumping", true);                   //¾Ö´Ï¸ŞÀÌ¼Ç ´õºí Á¡ÇÁ »óÅÂ Àü´Ş
+                m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));  //í”Œë ˆì´ì–´ì—ê²Œ ìˆ˜ì§ í˜ì„ ì¶”ê°€
+                animator.SetBool("IsDoubleJumping", true);                   //ì• ë‹ˆë©”ì´ì…˜ ë”ë¸” ì í”„ ìƒíƒœ ì „ë‹¬
             }
             else if (m_IsWall && !m_IsGrounded)
             {
-                if (!oldWallSlidding && m_Rigidbody2D.velocity.y < 0 || status.isDashing)  //º®¿¡ ºÙ¾î¼­ ½½¶óÀÌµù µÇ´Â ¼ø°£
+                if (!oldWallSlidding && m_Rigidbody2D.velocity.y < 0 || status.isDashing)  //ë²½ì— ë¶™ì–´ì„œ ìŠ¬ë¼ì´ë”© ë˜ëŠ” ìˆœê°„
                 {
                     m_IsWallSlidding = true;
                     m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
@@ -203,7 +203,7 @@ public class CharacterMovement : MonoBehaviour
                 }
                 status.isDashing = false;
 
-                if (m_IsWallSlidding)              //º® ½½¸®¾Æµù Áß
+                if (m_IsWallSlidding)              //ë²½ ìŠ¬ë¦¬ì•„ë”© ì¤‘
                 {
                     if (move * transform.localScale.x > 0.1f)
                     {
@@ -216,12 +216,12 @@ public class CharacterMovement : MonoBehaviour
                     }
                 }
 
-                if (jump && m_IsWallSlidding)                    //º® ½½¶óÀÌµù Áß Á¡ÇÁ
+                if (jump && m_IsWallSlidding)                    //ë²½ ìŠ¬ë¼ì´ë”© ì¤‘ ì í”„
                 {
-                    animator.SetBool("IsJumping", true);         //¾Ö´Ï¸ŞÀÌ¼Ç Á¡ÇÁ »óÅÂ Àü´Ş
+                    animator.SetBool("IsJumping", true);         //ì• ë‹ˆë©”ì´ì…˜ ì í”„ ìƒíƒœ ì „ë‹¬
                     animator.SetBool("JumpUp", true);
-                    m_Rigidbody2D.velocity = new Vector2(0.0f, 0.0f);  //¼Óµµ°ª º¸Á¤
-                    m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_JumpForce * 1.2f, m_JumpForce));  //Á¡ÇÁ Èûµé Àü´ŞÇØÁØ´Ù.
+                    m_Rigidbody2D.velocity = new Vector2(0.0f, 0.0f);  //ì†ë„ê°’ ë³´ì •
+                    m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_JumpForce * 1.2f, m_JumpForce));  //ì í”„ í˜ë“¤ ì „ë‹¬í•´ì¤€ë‹¤.
                     jumpWallStartX = transform.position.x;
                     limitVelOnWallJump = true;
                     canDoubleJump = true;
@@ -241,7 +241,7 @@ public class CharacterMovement : MonoBehaviour
                     status.StartDash(0.1f);
                 }
             }
-            else if (m_IsWallSlidding && !m_IsWall && status.checkTimer.GetRemainingTime() <= 0)  //º® ½½¶óÀÌµù ÁßÀÌ°í º®ÀÌ ³¡³µÀ» ¶§
+            else if (m_IsWallSlidding && !m_IsWall && status.checkTimer.GetRemainingTime() <= 0)  //ë²½ ìŠ¬ë¼ì´ë”© ì¤‘ì´ê³  ë²½ì´ ëë‚¬ì„ ë•Œ
             {
                 m_IsWallSlidding = false;
                 animator.SetBool("IsWallSliding", false);

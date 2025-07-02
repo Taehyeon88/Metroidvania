@@ -27,18 +27,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnFall()                              //¶³¾îÁü Ã³¸® Event
+    public void OnFall()                              //ë–¨ì–´ì§ ì²˜ë¦¬ Event
     {
         animator.SetBool("IsJumping", true);
     }
 
-    public void OnLanding()                           //¹Ù´Ú¿¡ ÂøÁöÃ³¸® Event
+    public void OnLanding()                           //ë°”ë‹¥ì— ì°©ì§€ì²˜ë¦¬ Event
     {
-        animator.SetBool("IsJumping", false);       
+        animator.SetBool("IsJumping", false);
     }
     private void FixedUpdate()
     {
-        //Ä³¸¯ÅÍ ¿òÁ÷ÀÓ ±¸ÇöÇÒ ÇÔ¼ö
+        //ìºë¦­í„° ì›€ì§ì„ êµ¬í˜„í•  í•¨ìˆ˜
         controller.Move(horizontalMove * Time.fixedDeltaTime, jump, dash);
 
         jump = false;

@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class CameraFallow : MonoBehaviour
 {
-    public float FollowSpeed = 2.0f;      //Ä«¸Ş¶ó°¡ Ä³¸¯ÅÍ¸¦ µû¶ó°¡´Â ½ºÇÇµå
-    public Transform Target;              //Å¸°Ù Æ®·£½ºÆû
+    public float FollowSpeed = 2.0f;      //ì¹´ë©”ë¼ê°€ ìºë¦­í„°ë¥¼ ë”°ë¼ê°€ëŠ” ìŠ¤í”¼ë“œ
+    public Transform Target;              //íƒ€ê²Ÿ íŠ¸ëœìŠ¤í¼
 
-    private Transform camTransform;       //Ä«¸Ş¶óÀÇ Æ®·£½ºÆû
+    private Transform camTransform;       //ì¹´ë©”ë¼ì˜ íŠ¸ëœìŠ¤í¼
 
     public float shakeDuration = 0.0f;
     public float shakeAmount = 0.1f;
     public float decreaseFactor = 1.0f;
 
-    Vector3 originalPos;                   //¿øº» À§Ä¡
+    Vector3 originalPos;                   //ì›ë³¸ ìœ„ì¹˜
 
     private void OnEnable()
     {

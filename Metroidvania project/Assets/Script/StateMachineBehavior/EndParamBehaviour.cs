@@ -8,7 +8,7 @@ public class EndParamBehaviour : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //¾Ö´Ï¸ÞÀÌ¼ÇÀÌ Á¾·áµÇ°í ÀüÈ¯µÇ´Â  ½ÃÁ¡¿¡¼­ ¼±¾ðÇÑ ¾Ö´Ï¸ÞÀÌ¼Ç ÆÄ¶ó¹ÌÅÍ °ªÀº true --> false ½ÃÅ²´Ù.
+        //ì• ë‹ˆë©”ì´ì…˜ì´ ì¢…ë£Œë˜ê³  ì „í™˜ë˜ëŠ”  ì‹œì ì—ì„œ ì„ ì–¸í•œ ì• ë‹ˆë©”ì´ì…˜ íŒŒë¼ë¯¸í„° ê°’ì€ true --> false ì‹œí‚¨ë‹¤.
         animator.SetBool(parameter, false);
     }
 }
